@@ -1,0 +1,9 @@
+# requirements.txt
+pandas
+scikit-learn
+dvc[azure]
+fastapi
+uvicorn[standard]
+python-dotenv
+joblib
+PyYAML

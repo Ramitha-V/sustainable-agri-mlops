@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# DVC
+/data/raw/crop_yield.csv
+/data/processed/
+/saved_models/
+/dvc_logs/
+
+# IDE
+.vscode/
+.idea/
