@@ -52,15 +52,15 @@ stages:
       params.yaml:
         train:
           random_state: 42
-          n_estimators: 200
-          max_depth: 25
+          n_estimators: 50
+          max_depth: 10
           min_samples_split: 2
           model_path: saved_models/model.joblib
     outs:
     - path: saved_models/model.joblib
       hash: md5
-      md5: 190a01d6ecea9a7af5e6b83f244c702d
-      size: 75200161
+      md5: 25a0265e97d48dd2ee154322e8d1dc9b
+      size: 2105473
   evaluate:
     cmd: python src/evaluate.py
     deps:
@@ -74,8 +74,8 @@ stages:
       size: 41111
     - path: saved_models/model.joblib
       hash: md5
-      md5: 190a01d6ecea9a7af5e6b83f244c702d
-      size: 75200161
+      md5: 25a0265e97d48dd2ee154322e8d1dc9b
+      size: 2105473
     - path: src/evaluate.py
       hash: md5
       md5: a1af2254380391214c9c8665a7fe30cd
@@ -86,5 +86,5 @@ stages:
     outs:
     - path: metrics.json
       hash: md5
-      md5: 30a17c6e012de72016cc05dc66369149
-      size: 104
+      md5: 49c54c782746f17e05d4230dd41626d6
+      size: 105
