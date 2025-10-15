@@ -9,8 +9,8 @@ stages:
       size: 1620945
     - path: src/data_preprocessing.py
       hash: md5
-      md5: f27317024dc1720f0895cd6f4b8fa3fb
-      size: 1449
+      md5: bbbd9a165a76afcb1b578193079f1ae4
+      size: 1491
     params:
       params.yaml:
         data_preprocessing:
@@ -46,21 +46,21 @@ stages:
       size: 164100
     - path: src/train.py
       hash: md5
-      md5: ccfd76806750c8e34a793daac7871f90
-      size: 873
+      md5: bee35860f01f55b87f610692e07024ab
+      size: 904
     params:
       params.yaml:
         train:
           random_state: 42
-          n_estimators: 100
-          max_depth: 10
+          n_estimators: 200
+          max_depth: 25
           min_samples_split: 2
           model_path: saved_models/model.joblib
     outs:
     - path: saved_models/model.joblib
       hash: md5
-      md5: be36667539f395dd2a0f7483604a4641
-      size: 4207057
+      md5: 190a01d6ecea9a7af5e6b83f244c702d
+      size: 75200161
   evaluate:
     cmd: python src/evaluate.py
     deps:
@@ -74,17 +74,17 @@ stages:
       size: 41111
     - path: saved_models/model.joblib
       hash: md5
-      md5: be36667539f395dd2a0f7483604a4641
-      size: 4207057
+      md5: 190a01d6ecea9a7af5e6b83f244c702d
+      size: 75200161
     - path: src/evaluate.py
       hash: md5
-      md5: a0b963b1f0a7c132e8ff17afc05f9afc
-      size: 949
+      md5: a1af2254380391214c9c8665a7fe30cd
+      size: 985
     params:
       params.yaml:
         train.model_path: saved_models/model.joblib
     outs:
     - path: metrics.json
       hash: md5
-      md5: 385d0cc708496abff4552df64a03f194
+      md5: 30a17c6e012de72016cc05dc66369149
       size: 104
