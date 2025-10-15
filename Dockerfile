@@ -13,9 +13,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application's code into the container
 COPY . .
 
+# --- DVC Authentication Fix ---
+# Accept the connection string as a build argument from the CI/CD pipeline
+ARG AZURE_STORAGE_CONNECTION_STRING
+# Set it as an environment variable for DVC to use during the build
+ENV AZURE_STORAGE_CONNECTION_STRING=$AZURE_STORAGE_CONNECTION_STRING
+
 # Run DVC to pull the model and data needed for the API
-# NOTE: This requires setting AZURE_STORAGE_CONNECTION_STRING during build
-# We will do this in the CI/CD pipeline
 RUN dvc pull
 
 # Make port 8000 available to the world outside this container

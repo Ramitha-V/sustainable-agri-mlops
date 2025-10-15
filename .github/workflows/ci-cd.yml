@@ -1,4 +1,4 @@
-name: Build, Test, and Deploy Sustainable Agriculture Predictor
+name: Build, Train, and Deploy Sustainable Agriculture Predictor
 
 on:
   push:
@@ -7,16 +7,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  # Job 1: Build and Test the Environment
+  build:
     runs-on: ubuntu-latest
-    environment: production
-
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: 'Set up Python'
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+
+    - name: 'Install Dependencies'
+      run: |
+        pip install -r requirements.txt
+    
+    # You can add unit tests here in the future
+    # - name: 'Run Pytest (Optional)'
+    #   run: |
+    #     pip install pytest
+    #     pytest
+
+  # Job 2: Run the DVC Training Pipeline
+  train:
+    runs-on: ubuntu-latest
+    needs: build # This job will only run if the 'build' job succeeds
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
+
+    - name: 'Set up Python'
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
 
@@ -24,13 +46,34 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: 'Pull DVC Data and Models'
+    - name: 'Authenticate and Pull DVC Data'
       env:
         AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       run: |
         dvc pull -v
 
-    # Optional: Add tests here using pytest if you have them
+    - name: 'Reproduce DVC Pipeline'
+      env:
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      run: |
+        dvc repro -f # Use -f to force re-running the training
+
+    - name: 'Push Trained Model to DVC Remote'
+      env:
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      run: |
+        dvc push
+
+
+  # Job 3: Build Docker Image and Deploy to Azure
+  deploy:
+    runs-on: ubuntu-latest
+    needs: train # This job will only run if the 'train' job succeeds
+    environment: production
+
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
 
     - name: 'Login to Azure'
       uses: azure/login@v1
