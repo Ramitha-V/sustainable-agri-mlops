@@ -1,0 +1,38 @@
+# dvc.yaml
+stages:
+  preprocess:
+    cmd: python src/data_preprocessing.py
+    deps:
+      - src/data_preprocessing.py
+      - data/raw/crop_yield.csv
+    params:
+      - data_preprocessing
+    outs:
+      - data/processed/X_train.csv
+      - data/processed/X_test.csv
+      - data/processed/y_train.csv
+      - data/processed/y_test.csv
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/processed/X_train.csv
+      - data/processed/y_train.csv
+    params:
+      - train
+    outs:
+      - saved_models/model.joblib
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - saved_models/model.joblib
+      - data/processed/X_test.csv
+      - data/processed/y_test.csv
+    params:
+      - train.model_path
+    metrics:
+      - metrics.json:
+          cache: false

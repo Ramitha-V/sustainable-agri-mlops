@@ -1,0 +1,90 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw/crop_yield.csv
+      hash: md5
+      md5: cefa48c7486bbc1fa4f2f65f4e1ef342
+      size: 1620945
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: f27317024dc1720f0895cd6f4b8fa3fb
+      size: 1449
+    params:
+      params.yaml:
+        data_preprocessing:
+          test_size: 0.2
+          random_state: 42
+    outs:
+    - path: data/processed/X_test.csv
+      hash: md5
+      md5: 54a9184ede92f31edca7cbf154b7b1e9
+      size: 2218870
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: db199028fd58d7b630ce2704cfa1ab64
+      size: 8869838
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: de17771c045c1c86dedbfabea6796c85
+      size: 41111
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 0b6cac602fbf41dadcce090f80427c60
+      size: 164100
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: db199028fd58d7b630ce2704cfa1ab64
+      size: 8869838
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 0b6cac602fbf41dadcce090f80427c60
+      size: 164100
+    - path: src/train.py
+      hash: md5
+      md5: ccfd76806750c8e34a793daac7871f90
+      size: 873
+    params:
+      params.yaml:
+        train:
+          random_state: 42
+          n_estimators: 100
+          max_depth: 10
+          min_samples_split: 2
+          model_path: saved_models/model.joblib
+    outs:
+    - path: saved_models/model.joblib
+      hash: md5
+      md5: be36667539f395dd2a0f7483604a4641
+      size: 4207057
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/X_test.csv
+      hash: md5
+      md5: 54a9184ede92f31edca7cbf154b7b1e9
+      size: 2218870
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: de17771c045c1c86dedbfabea6796c85
+      size: 41111
+    - path: saved_models/model.joblib
+      hash: md5
+      md5: be36667539f395dd2a0f7483604a4641
+      size: 4207057
+    - path: src/evaluate.py
+      hash: md5
+      md5: a0b963b1f0a7c132e8ff17afc05f9afc
+      size: 949
+    params:
+      params.yaml:
+        train.model_path: saved_models/model.joblib
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 385d0cc708496abff4552df64a03f194
+      size: 104
