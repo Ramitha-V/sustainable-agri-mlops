@@ -36,7 +36,7 @@
     <script>
         const form = document.getElementById('prediction-form');
         const resultDiv = document.getElementById('result');
-        const apiUrl = '/api/predict'; // Use the relative path for the proxy
+        const apiUrl = '/predict';
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             resultDiv.style.display = 'block';
