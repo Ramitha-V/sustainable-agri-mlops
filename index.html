@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Yield Predictor</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); width: 100%; max-width: 500px; }
+        h1 { text-align: center; color: #2a9d8f; margin-bottom: 1.5rem; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; }
+        label { margin-bottom: 0.5rem; font-weight: 600; }
+        input, select { padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        button { grid-column: 1 / -1; padding: 0.8rem; border: none; border-radius: 6px; background-color: #2a9d8f; color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
+        button:hover { background-color: #264653; }
+        #result { margin-top: 1.5rem; padding: 1rem; background-color: #e9f5f4; border-left: 5px solid #2a9d8f; border-radius: 6px; text-align: center; font-size: 1.2rem; font-weight: 600; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 Agricultural Yield Predictor</h1>
+        <form id="prediction-form">
+            <div class="form-group"><label for="Crop">Crop</label><input type="text" id="Crop" name="Crop" value="Rice" required></div>
+            <div class="form-group"><label for="Crop_Year">Year</label><input type="number" id="Crop_Year" name="Crop_Year" value="2024" required></div>
+            <div class="form-group"><label for="Season">Season</label><select id="Season" name="Season" required><option>Kharif</option><option>Rabi</option><option>Whole Year</option></select></div>
+            <div class="form-group"><label for="State">State</label><select id="State" name="State" required><option>Punjab</option><option>Maharashtra</option><option>Uttar Pradesh</option></select></div>
+            <div class="form-group"><label for="Area">Area (hectares)</label><input type="number" step="any" id="Area" name="Area" value="50000" required></div>
+            <div class="form-group"><label for="Annual_Rainfall">Rainfall (mm)</label><input type="number" step="any" id="Annual_Rainfall" name="Annual_Rainfall" value="850.5" required></div>
+            <div class="form-group"><label for="Fertilizer">Fertilizer (kg)</label><input type="number" step="any" id="Fertilizer" name="Fertilizer" value="12000" required></div>
+            <div class="form-group"><label for="Pesticide">Pesticide (kg)</label><input type="number" step="any" id="Pesticide" name="Pesticide" value="850" required></div>
+            <button type="submit">Predict Yield</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script>
+        const form = document.getElementById('prediction-form');
+        const resultDiv = document.getElementById('result');
+        const apiUrl = '/api/predict'; // Use the relative path for the proxy
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            resultDiv.style.display = 'block';
+            resultDiv.innerText = '🧠 Thinking...';
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.Crop_Year = parseInt(data.Crop_Year);
+            data.Area = parseFloat(data.Area);
+            data.Annual_Rainfall = parseFloat(data.Annual_Rainfall);
+            data.Fertilizer = parseFloat(data.Fertilizer);
+            data.Pesticide = parseFloat(data.Pesticide);
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                resultDiv.innerText = `Predicted Yield: ${result.predicted_yield.toFixed(2)} tonnes/hectare`;
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerText = 'Error: Could not get a prediction.';
+            }
+        });
+    </script>
+</body>
+</html>
